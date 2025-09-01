@@ -105,7 +105,7 @@ $total_pages = ceil($total_voters / $records_per_page);
                         <tr>
                             <th>Picture</th>
                             <th>Name</th>
-                            <th>HHL/SL</th>
+                            <th></th>
                             <th>Gender</th>
                             <th>Birthdate</th>
                             <th>Barangay</th>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Percent Loading Screen</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --fg: #e2e8f0;
+      --accent: #22d3ee;
+      --bar-bg: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    .page {
+      min-height: 200vh;
+      background: linear-gradient(180deg, #0b1022 0%, #121a33 100%);
+      color: var(--fg);
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      padding: 2rem;
+    }
+    .loader-overlay {
+      position: fixed; inset: 0;
+      display: grid; place-items: center;
+      background: var(--bg);
+      z-index: 9999;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    .loader {
+      width: min(90vw, 420px);
+      text-align: center;
+      user-select: none;
+    }
+    .percent {
+      font-weight: 700;
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      letter-spacing: 1px;
+      color: var(--fg);
+      margin-bottom: 1rem;
+    }
+    .bar {
+      height: 10px;
+      width: 100%;
+      background: var(--bar-bg);
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 8px 24px rgba(0,0,0,.35);
+    }
+    .bar > .fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      border-radius: inherit;
+      transition: width .15s ease;
+    }
+    .hint {
+      margin-top: .75rem;
+      font-size: 1rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="loaderOverlay" class="loader-overlay" aria-live="polite" aria-busy="true">
+    <div class="loader" role="status">
+      <div id="percentText" class="percent">0%</div>
+      <div class="bar"><div id="barFill" class="fill"></div></div>
+      <div class="hint" id="hintText">Loading database (0%)</div>
+    </div>
+  </div>
+
+  <main class="page">
+    <h1>Demo Page</h1>
+    <p>This is your page content. The loading screen will stop at 81%.</p>
+  </main>
+
+  <script>
+    (function(){
+      const percentText = document.getElementById('percentText');
+      const barFill = document.getElementById('barFill');
+      const hintText = document.getElementById('hintText');
+      let current = 0;
+      function render(p){
+        const clamped = Math.max(0, Math.min(81, Math.round(p)));
+        percentText.textContent = clamped + '%';
+        barFill.style.width = clamped + '%';
+        hintText.textContent = "Loading database (" + clamped + "%)";
+      }
+      window.setLoadingProgress = function(p){ current = p; render(current); };
+      const autoTimer = setInterval(() => {
+        const remaining = 81 - current;
+        const step = Math.max(1, Math.ceil(remaining * 0.07));
+        current = Math.min(81, current + step);
+        render(current);
+        if (current >= 81) clearInterval(autoTimer);
+      }, 120);
+      window.addEventListener('load', () => {
+        // Do nothing: it stays at 81%
+      });
+    })();
+  </script>
+</body>
+</html>
